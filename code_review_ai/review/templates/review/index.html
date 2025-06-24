@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Code Review Assistant</title>
+  <style>
+    #editor {
+      height: 400px;
+      width: 100%;
+      border: 1px solid #ccc;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+    }
+  </style>
+  <!-- Monaco Editor CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h2>AI Code Review Assistant</h2>
+
+    <select id="language">
+      <option value="python">Python</option>
+      <option value="javascript">JavaScript</option>
+    </select>
+
+    <div id="editor">def greet(name):\n    return "Hello " + name</div>
+    <br>
+    <button onclick="submitCode()">Submit Code</button>
+
+    <h3>Response:</h3>
+    <pre id="responseOutput"></pre>
+  </div>
+
+  <script>
+    let editor;
+    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' }});
+    require(['vs/editor/editor.main'], function () {
+      editor = monaco.editor.create(document.getElementById('editor'), {
+        value: 'def greet(name):\n    return "Hello " + name',
+        language: 'python',
+        theme: 'vs-dark'
+      });
+    });
+
+    function submitCode() {
+      const code = editor.getValue();
+      const language = document.getElementById("language").value;
+
+      fetch("/review-code/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code, language })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("responseOutput").textContent = JSON.stringify(data, null, 2);
+      })
+      .catch(err => {
+        document.getElementById("responseOutput").textContent = "Error: " + err;
+      });
+    }
+  </script>
+</body>
+</html>

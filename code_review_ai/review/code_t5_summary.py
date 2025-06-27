@@ -5,8 +5,9 @@ import dotenv
 import os
 
 dotenv.load_dotenv()
+api_key = os.getenv("GEMINI_API_KEY")
 # Configure Gemini with your API key
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+genai.configure(api_key=api_key)
 
 # Load Gemini Pro model
 model = genai.GenerativeModel("models/gemini-1.5-flash")
@@ -26,25 +27,6 @@ def get_code_explanation(code: str) -> str:
     except Exception as e:
         return f"Gemini error: {str(e)}"
 
-
-# def get_code_explanation(code: str) -> str:
-#     """
-#     Generates a natural language explanation of the given code using CodeT5.
-#     """
-#     input_text = f"summarize: {code.strip()[:512]}"
-#     inputs = tokenizer(input_text, return_tensors="pt", max_length=512, truncation=True)
-
-#     with torch.no_grad():
-#         output_ids = model.generate(
-#             inputs['input_ids'],
-#             num_beams=4,
-#             length_penalty=2.0,
-#             max_length=128,
-#             early_stopping=True
-#         )
-
-#     summary = tokenizer.decode(output_ids[0], skip_special_tokens=True)
-#     return summary
 
 
 def get_pylint_feedback(code: str):
